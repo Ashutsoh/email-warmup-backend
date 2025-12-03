@@ -1,6 +1,38 @@
-const Database = sqlite3 = require("sqlite3").verbose();
-const db = new sqlite3.Database(process.env.DATABASE_FILE);
+const fs = require("fs");
+const path = require("path");
+const sqlite3 = require("sqlite3").verbose();
 
+// -----------------------------------
+// Ensure data directory exists (IMPORTANT FOR RENDER)
+// -----------------------------------
+const dataDir = path.join(__dirname, "../data");
+
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
+  console.log("✔ Created data directory:", dataDir);
+}
+
+// -----------------------------------
+// Actual SQLite database file path
+// -----------------------------------
+const dbPath = path.join(dataDir, "database.db");
+
+console.log("✔ Using SQLite database file at:", dbPath);
+
+// -----------------------------------
+// Initialize SQLite DB
+// -----------------------------------
+const db = new sqlite3.Database(dbPath, (err) => {
+  if (err) {
+    console.error("❌ Failed to connect to SQLite:", err.message);
+  } else {
+    console.log("✔ Connected to SQLite database");
+  }
+});
+
+// -----------------------------------
+// Create Tables EXACTLY as your code
+// -----------------------------------
 db.exec(`
 CREATE TABLE IF NOT EXISTS smtp_accounts (
   id TEXT PRIMARY KEY,
